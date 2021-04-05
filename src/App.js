@@ -33,16 +33,12 @@ const AppColumn = styled.div`
 `;
 
 const App = () => {
-  // is active
-  const [isActivePopup, setIsActivePopup] = useState(true);
+  // active
+  const [isActivePopup, setIsActivePopup] = useState(false);
   // full size
   const [isPopupFullSize, setIsPopupFullSize] = useState(false);
   // roled up or no
   const [isRoledUp, setIsRoledUp] = useState(false);
-
-  const changePopupRoleUp = () => {
-    setIsPopupFullSize(!isPopupFullSize);
-  };
 
   return (
     <AppWrapp>
@@ -52,7 +48,7 @@ const App = () => {
             <Row style={{ marginBottom: "25px" }}>
               <Logo />
             </Row>
-            <Button text="Compose" />
+            <Button text="Compose" onClick={() => setIsActivePopup(true)} />
           </Block>
           <Block style={{ paddingLeft: "20px" }}>
             <Menu />
@@ -70,7 +66,7 @@ const App = () => {
           fullSize={isPopupFullSize}
           roled={isRoledUp}
           setIsActivePopup={setIsActivePopup}
-          changePopupRoleUp={changePopupRoleUp}
+          setIsPopupFullSize={setIsPopupFullSize}
           setIsRoledUp={setIsRoledUp}
         />
       ) : (

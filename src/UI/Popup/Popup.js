@@ -20,7 +20,7 @@ import down from "../../assets/down.png";
 
 const PopupWrapp = styled.div`
   position: fixed;
-  bottom: ${(props) => (props.roled ? props.bottomPosition() : "15px")};
+  bottom: 15px;
   left: ${(props) => (props.fullSize ? "4%" : "initial")};
   top: ${(props) => (props.fullSize ? "15px" : "initial")};
   right: 8px;
@@ -80,7 +80,7 @@ const Popup = ({
   fullSize,
   roled,
   setIsActivePopup,
-  changePopupRoleUp,
+  setIsPopupFullSize,
   setIsRoledUp,
 }) => {
   const headerButtons = [
@@ -88,8 +88,19 @@ const Popup = ({
       id: uuid(),
       title: "role up",
       icon: role,
+      //если roled false => то открыт
       onClick: () => {
-        changeRolePosition();
+        if (roled) {
+          setIsRoledUp(false);
+          popupRef.current.style.bottom = `15px`;
+        } else if (fullSize) {
+          setIsPopupFullSize(false);
+          setIsRoledUp(true);
+          popupRef.current.style.bottom = `${popupHeight}px`;
+        } else {
+          popupRef.current.style.bottom = `${popupHeight}px`;
+          setIsRoledUp(true);
+        }
       },
     },
     {
@@ -97,7 +108,14 @@ const Popup = ({
       title: "full screen",
       icon: full,
       onClick: () => {
-        changePopupRoleUp();
+        if (roled) {
+          setIsRoledUp(false);
+          setIsPopupFullSize(true);
+        } else if (!fullSize) {
+          setIsPopupFullSize(true);
+        } else {
+          setIsPopupFullSize(false);
+        }
       },
     },
     {
@@ -105,7 +123,10 @@ const Popup = ({
       title: "close",
       icon: close,
       onClick: () => {
-        setIsActivePopup(false);
+        if (fullSize) {
+          setIsPopupFullSize(false);
+          setIsActivePopup(false);
+        } else setIsActivePopup(false);
       },
     },
   ];
@@ -123,18 +144,14 @@ const Popup = ({
     },
   ];
 
-  const popupRef = React.useRef(null);
-  const popupHeader = React.useRef(null);
+  const [popupHeight, setPopupHeight] = React.useState(0);
 
   React.useEffect(() => {
-    setTimeout(() => {
-      setIsActivePopup(true);
-    }, 3000);
-  }, [!active]);
+    setPopupHeight(calculatePopupBottomPosition());
+  }, []);
 
-  const changeRolePosition = () => {
-    setIsRoledUp(!roled);
-  };
+  const popupRef = React.useRef(null);
+  const popupHeader = React.useRef(null);
 
   const calculatePopupBottomPosition = () => {
     const popupPadding = 22;
@@ -143,7 +160,7 @@ const Popup = ({
 
     let headerHeight = popupHeader.current.clientHeight + popupPadding * 2; // popup header height
 
-    return `-${height - headerHeight}px`;
+    return `-${height - headerHeight}`;
   };
 
   return (
@@ -152,7 +169,7 @@ const Popup = ({
       active={active}
       fullSize={fullSize}
       roled={roled}
-      bottomPosition={calculatePopupBottomPosition}
+      // bottomPosition={popupHeight}
     >
       <Paper style={{ padding: "22px" }}>
         <PopupHeader ref={popupHeader}>
